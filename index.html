@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Speech Recognition</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #9face6);
+        }
+
+        .card {
+            width: 450px;
+            background: white;
+            padding: 35px;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        #recording {
+            display: none;
+            margin-top: 15px;
+            color: red;
+            font-size: 15px;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: red;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            min-height: 60px;
+            color: #444;
+            font-size: 16px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+
+        <h1>🎙 Speech Recognition</h1>
+
+        <button id="recordBtn">
+            Start Recording
+        </button>
+
+        <div id="recording">
+            <span class="dot"></span>
+            Recording...
+        </div>
+
+        <div id="result">
+            Your speech will appear here...
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const recordBtn = document.getElementById("recordBtn");
+        const recording = document.getElementById("recording");
+        const result = document.getElementById("result");
+
+        let recognition;
+
+        if ("webkitSpeechRecognition" in window) {
+
+            recognition = new webkitSpeechRecognition();
+
+        } else if ("SpeechRecognition" in window) {
+
+            recognition = new SpeechRecognition();
+
+        } else {
+
+            result.innerText =
+                "Speech recognition is not supported in this browser.";
+
+            recordBtn.disabled = true;
+        }
+
+
+        if (recognition) {
+
+            recognition.lang = "en-IN";
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+
+            recordBtn.onclick = function () {
+
+                result.innerText = "Listening...";
+
+                recording.style.display = "block";
+
+                recordBtn.innerText = "Listening...";
+
+                recognition.start();
+            };
+
+
+            recognition.onresult = function (event) {
+
+                const text =
+                    event.results[0][0].transcript;
+
+                result.innerText = text;
+
+            };
+
+
+            recognition.onend = function () {
+
+                recording.style.display = "none";
+
+                recordBtn.innerText = "Start Recording";
+
+            };
+
+
+            recognition.onerror = function (event) {
+
+                result.innerText =
+                    "Error: " + event.error;
+
+                recording.style.display = "none";
+
+                recordBtn.innerText = "Start Recording";
+            };
+
+        }
+
+    </script>
+
+</body>
+</html>
